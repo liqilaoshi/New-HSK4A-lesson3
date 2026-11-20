@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK 4 第三课热身 - 词图匹配</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti for winning animation -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans SC', 'Roboto', sans-serif;
+      background-color: #f8faf9;
+      user-select: none;
+    }
+
+    /* Standard HSK Textbook Green Palette */
+    .hsk-green {
+      background-color: #72b75b;
+    }
+    .hsk-green-light {
+      background-color: #eaf4e8;
+    }
+
+    /* Custom image card animation */
+    .image-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .vocab-card {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .vocab-card.selected {
+      background-color: #72b75b;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(114, 183, 91, 0.35);
+    }
+
+    .vocab-card.selected .pinyin,
+    .vocab-card.selected .letter-tag {
+      color: white !important;
+    }
+
+    .matched-correct {
+      border-color: #22c55e !important;
+      background-color: #f0fdf4 !important;
+    }
+
+    .matched-incorrect {
+      border-color: #ef4444 !important;
+      background-color: #fef2f2 !important;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    /* Drop zone badge styling */
+    .badge-assigned {
+      background-color: #72b75b;
+      color: white;
+      font-weight: bold;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-12 flex flex-col justify-between">
+
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
+
+    <!-- Header Section (Matching standard textbook layout) -->
+    <div class="mb-6">
+      <!-- Top pill badge "Warm-Up" -->
+      <div class="inline-block hsk-green text-white text-sm font-semibold px-4 py-1 rounded-full shadow-sm mb-2">
+        Warm-Up
+      </div>
+      <!-- Title "热身" -->
+      <div class="hsk-green text-white text-2xl sm:text-3xl font-bold px-6 py-2 rounded-xl shadow-md inline-block w-full sm:w-auto mb-4">
+        热身
+      </div>
+      <!-- Instruction subtitle -->
+      <div class="text-gray-800 text-lg sm:text-xl font-medium flex items-center flex-wrap gap-2 mt-2">
+        <span>1. 给下面的词语选择对应的图片。</span>
+        <span class="text-gray-500 text-base font-normal">Match the words/phrases with the pictures.</span>
+      </div>
+    </div>
+
+    <!-- Interactive Game Box -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
+
+      <!-- Top Audio Controls / Instructions -->
+      <div class="flex justify-between items-center mb-4 text-xs sm:text-sm text-gray-500 bg-emerald-50/50 px-4 py-2 rounded-lg border border-emerald-100">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          <span>提示：先点击下面的“词语”再点击“图片”匹配，或将词语拖拽到图片上。</span>
+        </div>
+        <button id="toggleAudioBtn" onclick="toggleAudio()" class="text-emerald-700 hover:text-emerald-900 font-medium flex items-center gap-1 transition">
+          <i id="audioIcon" class="fa-solid fa-volume-high"></i>
+          <span id="audioStatusText">发音: 开</span>
+        </button>
+      </div>
+
+      <!-- Image Grid Section (6 Pictures without answer labels on top) -->
+      <div class="hsk-green-light rounded-2xl p-4 sm:p-6 mb-8 border border-emerald-100">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6" id="imageGrid">
+          <!-- Image cards injected dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Vocabulary Items Section (A-F with Pinyin and Words) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4" id="vocabGrid">
+        <!-- Vocabulary cards injected dynamically via JS -->
+      </div>
+
+    </div>
+
+    <!-- Action Buttons & Feedback Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+      <div id="scoreDisplay" class="text-gray-700 font-medium text-center sm:text-left flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-emerald-600"></i>
+        <span>请完成匹配后点击检查答案</span>
+      </div>
+
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <button onclick="resetGame()" class="flex-1 sm:flex-none px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition duration-200 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-rotate-right"></i>
+          重置 / Reset
+        </button>
+        <button onclick="checkAnswers()" class="flex-1 sm:flex-none px-6 py-2.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition duration-200 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check"></i>
+          检查答案 / Check
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Custom Alert/Result Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+      <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+      <p id="modalMessage" class="text-gray-600 mb-6"></p>
+      <button onclick="closeModal()" class="w-full py-3 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+        继续练习 / Continue
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Data definition: Updated with Lesson 3 image URLs and target correct answers
+    const imageData = [
+      { id: 'img_1', targetCode: 'F', name: '保护', imgUrl: 'https://iili.io/oFwcJHX.png' },
+      { id: 'img_2', targetCode: 'B', name: '扫码支付', imgUrl: 'https://iili.io/oFw02nf.png' },
+      { id: 'img_3', targetCode: 'C', name: '网购', imgUrl: 'https://iili.io/oFw1JHP.png' },
+      { id: 'img_4', targetCode: 'D', name: '快递员', imgUrl: 'https://iili.io/oFw14LJ.png' },
+      { id: 'img_5', targetCode: 'E', name: '管', imgUrl: 'https://iili.io/oFwEu2V.png' },
+      { id: 'img_6', targetCode: 'A', name: '法律', imgUrl: 'https://iili.io/oFwEry7.png' }
+    ];
+
+    // Vocabulary items mapping (A - F) updated for Lesson 3
+    const vocabList = [
+      { code: 'A', text: '法律', pinyin: 'fǎlǜ' },
+      { code: 'B', text: '扫码支付', pinyin: 'sǎomǎ zhīfù' },
+      { code: 'C', text: '网购', pinyin: 'wǎnggòu' },
+      { code: 'D', text: '快递员', pinyin: 'kuàidìyuán' },
+      { code: 'E', text: '管', pinyin: 'guǎn' },
+      { code: 'F', text: '保护', pinyin: 'bǎohù' }
+    ];
+
+    // Game state
+    let userAssignments = {}; // Key: img_id ('img_1'), Value: Vocab Code ('E')
+    let selectedVocab = null;
+    let audioEnabled = true;
+
+    // Web Speech API
+    const synth = window.speechSynthesis;
+
+    function speakWord(text) {
+      if (!audioEnabled || !synth) return;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.85;
+      synth.speak(utterance);
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const statusText = document.getElementById('audioStatusText');
+      const icon = document.getElementById('audioIcon');
+      if (audioEnabled) {
+        statusText.innerText = '发音: 开';
+        icon.className = 'fa-solid fa-volume-high';
+      } else {
+        statusText.innerText = '发音: 关';
+        icon.className = 'fa-solid fa-volume-xmark text-gray-400';
+      }
+    }
+
+    // Render Image Cards Grid (Clean Images with Drop Slot at Bottom)
+    function renderImages() {
+      const grid = document.getElementById('imageGrid');
+      grid.innerHTML = '';
+
+      imageData.forEach((item, index) => {
+        const assignedVocabCode = userAssignments[item.id];
+        const assignedVocabObj = vocabList.find(v => v.code === assignedVocabCode);
+
+        const card = document.createElement('div');
+        card.className = `image-card relative bg-white rounded-xl overflow-hidden shadow-sm border-2 border-gray-200 cursor-pointer flex flex-col group ${selectedVocab ? 'hover:border-emerald-400 hover:shadow-md' : ''}`;
+        card.setAttribute('data-image-id', item.id);
+
+        // Click event on image card
+        card.onclick = () => handleImageClick(item.id);
+
+        // Drag & Drop events
+        card.ondragover = (e) => e.preventDefault();
+        card.ondrop = (e) => handleDrop(e, item.id);
+
+        card.innerHTML = `
+          <!-- Pure Image Container without initial letters/answers -->
+          <div class="relative bg-gray-50 h-36 sm:h-44 md:h-48 overflow-hidden flex items-center justify-center">
+            <img 
+              src="${item.imgUrl}" 
+              alt="Picture ${index + 1}"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onerror="this.onerror=null; this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Picture+${index + 1}';"
+            />
+          </div>
+
+          <!-- Matching Slot / Selected Answer Display Slot -->
+          <div class="p-2.5 sm:p-3 bg-white border-t border-gray-100 min-h-[52px] flex items-center justify-between">
+            ${assignedVocabObj ? `
+              <div class="flex items-center justify-between w-full">
+                <div class="flex items-center gap-2">
+                  <span class="badge-assigned px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold">${assignedVocabObj.code}</span>
+                  <div class="flex flex-col text-left">
+                    <span class="text-[10px] text-gray-400 font-mono leading-none">${assignedVocabObj.pinyin}</span>
+                    <span class="text-sm sm:text-base font-bold text-gray-800 leading-tight">${assignedVocabObj.text}</span>
+                  </div>
+                </div>
+                <button onclick="event.stopPropagation(); removeAssignment('${item.id}');" class="text-gray-300 hover:text-red-500 p-1 transition" title="移除匹配">
+                  <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+            ` : `
+              <span class="text-xs text-gray-400 italic mx-auto flex items-center gap-1.5">
+                <i class="fa-regular fa-square-plus text-gray-300 text-sm"></i> 放入所选词语
+              </span>
+            `}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Render Vocabulary Options (A - F)
+    function renderVocab() {
+      const grid = document.getElementById('vocabGrid');
+      grid.innerHTML = '';
+
+      vocabList.forEach(v => {
+        // Check if this vocabulary item is already assigned
+        const assignedImgId = Object.keys(userAssignments).find(key => userAssignments[key] === v.code);
+        const isSelected = selectedVocab === v.code;
+
+        const card = document.createElement('div');
+        card.draggable = !assignedImgId; // Drag enabled if unassigned
+        
+        card.className = `vocab-card p-3 rounded-xl border-2 flex flex-col items-center justify-center text-center transition-all ${
+          isSelected 
+            ? 'selected border-emerald-600' 
+            : assignedImgId 
+              ? 'bg-gray-100 border-gray-200 opacity-40 cursor-not-allowed' 
+              : 'bg-white border-gray-200 hover:border-emerald-400 hover:shadow-md'
+        }`;
+
+        // Drag events
+        card.ondragstart = (e) => {
+          if (assignedImgId) {
+            e.preventDefault();
+            return;
+          }
+          e.dataTransfer.setData('text/plain', v.code);
+          selectedVocab = v.code;
+          renderVocab();
+        };
+
+        // Click handlers
+        card.onclick = () => {
+          if (assignedImgId) {
+            speakWord(v.text);
+            return;
+          }
+          if (selectedVocab === v.code) {
+            selectedVocab = null; // Unselect
+          } else {
+            selectedVocab = v.code;
+            speakWord(v.text);
+          }
+          renderVocab();
+        };
+
+        card.innerHTML = `
+          <div class="text-xs font-mono text-emerald-600 mb-0.5 pinyin">${v.pinyin}</div>
+          <div class="flex items-center gap-1.5">
+            <span class="letter-tag font-bold text-emerald-700 text-base sm:text-lg">${v.code}</span>
+            <span class="font-bold text-gray-800 text-base sm:text-lg">${v.text}</span>
+          </div>
+          ${assignedImgId ? `<span class="text-[10px] text-gray-400 mt-1">已选择</span>` : ''}
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Handle Image Click
+    function handleImageClick(imageId) {
+      if (!selectedVocab) {
+        if (userAssignments[imageId]) {
+          removeAssignment(imageId);
+        }
+        return;
+      }
+
+      userAssignments[imageId] = selectedVocab;
+      
+      const vocabObj = vocabList.find(v => v.code === selectedVocab);
+      if (vocabObj) speakWord(vocabObj.text);
+
+      selectedVocab = null;
+      updateUI();
+    }
+
+    // Handle Drag & Drop
+    function handleDrop(e, imageId) {
+      e.preventDefault();
+      const vocabCode = e.dataTransfer.getData('text/plain') || selectedVocab;
+      if (vocabCode) {
+        userAssignments[imageId] = vocabCode;
+        const vocabObj = vocabList.find(v => v.code === vocabCode);
+        if (vocabObj) speakWord(vocabObj.text);
+        selectedVocab = null;
+        updateUI();
+      }
+    }
+
+    function removeAssignment(imageId) {
+      delete userAssignments[imageId];
+      updateUI();
+    }
+
+    function updateUI() {
+      renderImages();
+      renderVocab();
+      updateScoreSummary();
+    }
+
+    function updateScoreSummary() {
+      const assignedCount = Object.keys(userAssignments).length;
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      scoreDisplay.innerHTML = `
+        <i class="fa-solid fa-list-check text-emerald-600"></i>
+        <span>匹配进度：<strong class="text-emerald-700">${assignedCount}</strong> / ${imageData.length}</span>
+      `;
+    }
+
+    // Check Answers / Grading Logic
+    function checkAnswers() {
+      const assignedKeys = Object.keys(userAssignments);
+      
+      if (assignedKeys.length < imageData.length) {
+        showModal(
+          'fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50',
+          '未完成匹配',
+          `请将所有 ${imageData.length} 个词语与对应图片匹配后再进行检查！`
+        );
+        return;
+      }
+
+      let correctCount = 0;
+      const imageCards = document.querySelectorAll('.image-card');
+
+      imageData.forEach(item => {
+        const userVocabCode = userAssignments[item.id];
+        const cardElement = Array.from(imageCards).find(el => el.getAttribute('data-image-id') === item.id);
+
+        if (userVocabCode === item.targetCode) {
+          correctCount++;
+          if (cardElement) {
+            cardElement.classList.remove('matched-incorrect');
+            cardElement.classList.add('matched-correct');
+          }
+        } else {
+          if (cardElement) {
+            cardElement.classList.remove('matched-correct');
+            cardElement.classList.add('matched-incorrect');
+          }
+        }
+      });
+
+      if (correctCount === imageData.length) {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 120,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+        showModal(
+          'fa-solid fa-trophy text-emerald-500 bg-emerald-50',
+          '太棒了！全部正确！',
+          `恭喜你完美完成练习！正确率：100% (${correctCount}/${imageData.length})`
+        );
+      } else {
+        showModal(
+          'fa-solid fa-circle-xmark text-red-500 bg-red-50',
+          '再试一次吧！',
+          `你答对了 ${correctCount} / ${imageData.length} 个。标红色的选项有误，点击图片可重新选择。`
+        );
+      }
+    }
+
+    // Modal Control
+    function showModal(iconClass, title, message) {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+
+      modalIcon.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl ${iconClass}`;
+      modalTitle.innerText = title;
+      modalMessage.innerText = message;
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalCard.classList.remove('scale-95');
+        modalCard.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      
+      modal.classList.add('opacity-0');
+      modalCard.classList.remove('scale-100');
+      modalCard.classList.add('scale-95');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    // Reset Game State
+    function resetGame() {
+      userAssignments = {};
+      selectedVocab = null;
+      updateUI();
+    }
+
+    // Page Load Setup
+    window.onload = () => {
+      updateUI();
+    };
+  </script>
+</body>
+</html>
