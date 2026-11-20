@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK 4 课文1 - 一天，陈天中从学校出来迷路了，就向一位同学问路。</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans SC', 'Roboto', sans-serif;
+      background-color: #f8faf9;
+      color: #333;
+      user-select: none;
+    }
+
+    /* HSK Standard Green Aesthetic Tokens */
+    .hsk-header-bg {
+      background-color: #72b75b;
+    }
+    .hsk-green {
+      background-color: #72b75b;
+    }
+    .hsk-green-dark {
+      background-color: #589643;
+    }
+    .hsk-green-light {
+      background-color: #ebf6e9;
+    }
+
+    /* Page Navigation Transitions */
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Option Item Styles for Quiz */
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+      transform: translateX(4px);
+    }
+    .quiz-option.selected {
+      background-color: #ffffff !important;
+      color: #2e7d32 !important;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    /* Auto-Grading Classes */
+    .quiz-option.correct-choice {
+      background-color: #dcfce7 !important;
+      color: #15803d !important;
+      border: 2px solid #22c55e;
+      font-weight: bold;
+    }
+    .quiz-option.wrong-choice {
+      background-color: #fee2e2 !important;
+      color: #b91c1c !important;
+      border: 2px solid #ef4444;
+      text-decoration: line-through;
+    }
+
+    /* Audio wave animation */
+    .audio-pulse {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-10">
+
+  <!-- Shared Audio Source (Lesson 3-1) -->
+  <audio id="lessonAudio" src="https://liqilaoshi.github.io/New-HSK4A-lesson3/3-1.mp3" preload="auto"></audio>
+
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full flex-grow">
+
+    <!-- Header Section (Matching Image 1 & Image 2 DNA) -->
+    <div class="hsk-header-bg rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
+      <!-- Tag Pill Badge -->
+      <div class="inline-block bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-4 py-1 rounded-full mb-3">
+        Text 1
+      </div>
+      <!-- Title text with location pin icon -->
+      <div class="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-3 leading-snug">
+        <span>课文1</span>
+        <i class="fa-solid fa-location-dot text-amber-300 text-xl sm:text-2xl"></i>
+        <span>一天，陈天中从学校出来迷路了，就向一位同学问路。</span>
+      </div>
+      <!-- English Subtitle -->
+      <p class="text-white/90 text-sm sm:text-base font-normal mt-2 italic pl-1">
+        One day, after leaving school, Chen Tianzhong got lost and asked a fellow student for directions.
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 1: Text 1 Audio Reading Page          -->
+    <!-- ========================================== -->
+    <div id="page1" class="page active">
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          
+          <!-- Left: Asking for Directions Scene Image -->
+          <div class="md:col-span-8 rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center bg-gray-50">
+            <img 
+              src="https://iili.io/oFNEzKv.md.png" 
+              alt="一天，陈天中从学校出来迷路了，就向一位同学问路。" 
+              class="w-full h-auto max-h-[420px] object-cover rounded-xl"
+              onerror="this.onerror=null; this.src='https://placehold.co/800x500/72b75b/ffffff?text=Text+1+Asking+for+Directions';"
+            />
+          </div>
+
+          <!-- Right: Green Audio Player Panel -->
+          <div class="md:col-span-4 hsk-green rounded-2xl p-6 text-white flex flex-col justify-between shadow-sm min-h-[260px]">
+            <div>
+              <!-- Audio Play Control Card -->
+              <button 
+                onclick="toggleAudio('p1')" 
+                id="p1AudioBtn"
+                class="w-full bg-white/15 hover:bg-white/25 border border-white/30 rounded-2xl p-4 transition duration-200 flex items-center justify-center gap-3 mb-6 group cursor-pointer"
+              >
+                <div id="p1IconBg" class="w-12 h-12 rounded-full bg-amber-400 text-emerald-900 flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform">
+                  <i id="p1AudioIcon" class="fa-solid fa-volume-high"></i>
+                </div>
+                <div class="text-left">
+                  <div class="text-xl font-bold tracking-wider">3-1</div>
+                  <div id="p1AudioStatus" class="text-xs text-white/80">点击播放课文朗读</div>
+                </div>
+              </button>
+
+              <!-- Audio Seek/Progress Bar -->
+              <div class="w-full bg-black/15 h-2 rounded-full overflow-hidden mb-4 cursor-pointer" onclick="seekAudio(event)">
+                <div id="audioProgressBar" class="hsk-green-dark h-full w-0 transition-all duration-100 bg-amber-300"></div>
+              </div>
+            </div>
+
+            <!-- Page 24 Textbook Content Hint -->
+            <div class="bg-black/10 rounded-xl p-4 text-sm leading-relaxed border border-white/10">
+              <p class="font-bold mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> 课文内容请见课本P24。
+              </p>
+              <p class="text-xs text-white/80 italic">
+                Please refer to page 24 of the textbook for the content of the text.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Page 1 Navigation Button -->
+      <div class="flex justify-end">
+        <button 
+          onclick="switchPage(2)" 
+          class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2 text-base cursor-pointer"
+        >
+          进入听力理解练习 (下一页)
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2: Listening Quiz Page                -->
+    <!-- ========================================== -->
+    <div id="page2" class="page">
+      
+      <!-- Green Quiz Panel matching Image 2 -->
+      <div class="hsk-green rounded-3xl p-6 sm:p-8 text-white shadow-lg mb-6 relative">
+        
+        <!-- Header Bar inside Quiz Panel -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-white/20 pb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-wide">
+              听对话，选择正确答案。
+            </h2>
+            <p class="text-white/80 text-sm italic mt-1">
+              Listen to the dialogue and choose the correct answer.
+            </p>
+          </div>
+
+          <!-- Replay Audio Button (🔊 3-1) -->
+          <button 
+            onclick="toggleAudio('p2')" 
+            id="p2AudioBtn"
+            class="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 text-sm sm:text-base self-end sm:self-auto cursor-pointer"
+          >
+            <i id="p2AudioIcon" class="fa-solid fa-volume-high text-lg"></i>
+            <span>3-1 重新播放</span>
+          </button>
+        </div>
+
+        <!-- Question (1) -->
+        <div class="mb-8 bg-black/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-lg sm:text-xl font-bold mb-3 flex items-start gap-2">
+            <span class="bg-white/20 px-2.5 py-0.5 rounded-lg text-sm mt-0.5">(1)</span>
+            <span>陈天中到十字路口后，应该怎么走？</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4" id="q1Options">
+            <div onclick="selectOption(1, 'A')" id="q1_A" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">A</span> 向前走
+            </div>
+            <div onclick="selectOption(1, 'B')" id="q1_B" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">B</span> 向右转
+            </div>
+            <div onclick="selectOption(1, 'C')" id="q1_C" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">C</span> 向左转
+            </div>
+            <div onclick="selectOption(1, 'D')" id="q1_D" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">D</span> 向南走
+            </div>
+          </div>
+        </div>
+
+        <!-- Question (2) -->
+        <div class="mb-4 bg-black/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-lg sm:text-xl font-bold mb-3 flex items-start gap-2">
+            <span class="bg-white/20 px-2.5 py-0.5 rounded-lg text-sm mt-0.5">(2)</span>
+            <span>为了找到目的地，同学建议陈天中：</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4" id="q2Options">
+            <div onclick="selectOption(2, 'A')" id="q2_A" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">A</span> 坐地铁
+            </div>
+            <div onclick="selectOption(2, 'B')" id="q2_B" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">B</span> 买张地图
+            </div>
+            <div onclick="selectOption(2, 'C')" id="q2_C" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">C</span> 用手机地图
+            </div>
+            <div onclick="selectOption(2, 'D')" id="q2_D" class="quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg">
+              <span class="font-bold text-amber-300">D</span> 问出租车司机
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <button 
+          onclick="switchPage(1)" 
+          class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          返回第一页 / Back
+        </button>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <button 
+            onclick="resetQuiz()" 
+            class="flex-1 sm:flex-none px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-rotate-right"></i>
+            重置 / Reset
+          </button>
+          <button 
+            onclick="submitQuiz()" 
+            class="flex-1 sm:flex-none px-7 py-2.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-check"></i>
+            提交答案 / Submit
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Grading Feedback Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+      <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+      <p id="modalMessage" class="text-gray-600 mb-6 leading-relaxed"></p>
+      <button onclick="closeModal()" class="w-full py-3 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition cursor-pointer">
+        确定 / OK
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Audio Player State
+    const audio = document.getElementById('lessonAudio');
+    let isPlaying = false;
+
+    // Standard Answers for Lesson 3 Text 1: Question (1) -> B, Question (2) -> C
+    const userAnswers = { 1: null, 2: null };
+    const correctAnswers = { 1: 'B', 2: 'C' };
+
+    // Toggle Play/Pause Audio
+    function toggleAudio(source) {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play().catch(e => console.warn("Audio play blocked by browser:", e));
+      }
+    }
+
+    audio.onplay = () => {
+      isPlaying = true;
+      updateAudioUI(true);
+    };
+
+    audio.onpause = () => {
+      isPlaying = false;
+      updateAudioUI(false);
+    };
+
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        document.getElementById('audioProgressBar').style.width = pct + '%';
+      }
+    };
+
+    audio.onended = () => {
+      isPlaying = false;
+      updateAudioUI(false);
+      document.getElementById('audioProgressBar').style.width = '0%';
+    };
+
+    function updateAudioUI(playing) {
+      const p1Icon = document.getElementById('p1AudioIcon');
+      const p1Status = document.getElementById('p1AudioStatus');
+      const p1IconBg = document.getElementById('p1IconBg');
+      const p2Icon = document.getElementById('p2AudioIcon');
+
+      if (playing) {
+        p1Icon.className = 'fa-solid fa-pause';
+        p1Status.innerText = '正在播放...';
+        p1IconBg.classList.add('audio-pulse');
+        p2Icon.className = 'fa-solid fa-pause text-lg';
+      } else {
+        p1Icon.className = 'fa-solid fa-volume-high';
+        p1Status.innerText = '点击播放课文朗读';
+        p1IconBg.classList.remove('audio-pulse');
+        p2Icon.className = 'fa-solid fa-volume-high text-lg';
+      }
+    }
+
+    function seekAudio(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const pct = clickX / rect.width;
+      if (audio.duration) {
+        audio.currentTime = pct * audio.duration;
+      }
+    }
+
+    // Page Switching (Page 1 <-> Page 2)
+    function switchPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.getElementById('page' + pageNumber).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Option Selection
+    function selectOption(qNum, option) {
+      userAnswers[qNum] = option;
+      const options = ['A', 'B', 'C', 'D'];
+      options.forEach(opt => {
+        const el = document.getElementById(`q${qNum}_${opt}`);
+        if (el) {
+          if (opt === option) {
+            el.classList.add('selected');
+          } else {
+            el.classList.remove('selected');
+          }
+        }
+      });
+    }
+
+    // Submit & Auto Grading System
+    function submitQuiz() {
+      if (!userAnswers[1] || !userAnswers[2]) {
+        showModal(
+          'fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50',
+          '未完成答题',
+          '请先回答第 (1) 和第 (2) 两道题目再提交答案！'
+        );
+        return;
+      }
+
+      let isQ1Correct = userAnswers[1] === correctAnswers[1];
+      let isQ2Correct = userAnswers[2] === correctAnswers[2];
+
+      applyGradingStyles(1, isQ1Correct);
+      applyGradingStyles(2, isQ2Correct);
+
+      if (isQ1Correct && isQ2Correct) {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 120,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+        showModal(
+          'fa-solid fa-trophy text-emerald-500 bg-emerald-50',
+          '回答完全正确！',
+          '恭喜你！两道听力理解题全部答对！<br><b>(1) B 向右转<br>(2) C 用手机地图</b>'
+        );
+      } else {
+        let msg = '';
+        if (!isQ1Correct) msg += '第 (1) 题解答有误；';
+        if (!isQ2Correct) msg += '第 (2) 题解答有误；';
+        msg += '<br>正确选项已为您突出显示，请重新听音或查看提示。';
+
+        showModal(
+          'fa-solid fa-circle-xmark text-red-500 bg-red-50',
+          '部分题目有误',
+          msg
+        );
+      }
+    }
+
+    function applyGradingStyles(qNum, isCorrect) {
+      const options = ['A', 'B', 'C', 'D'];
+      options.forEach(opt => {
+        const el = document.getElementById(`q${qNum}_${opt}`);
+        el.classList.remove('selected', 'correct-choice', 'wrong-choice');
+
+        if (opt === correctAnswers[qNum]) {
+          el.classList.add('correct-choice'); // Always highlight the correct answer in green
+        } else if (opt === userAnswers[qNum] && !isCorrect) {
+          el.classList.add('wrong-choice'); // Highlight user's wrong selection in red
+        }
+      });
+    }
+
+    function resetQuiz() {
+      userAnswers[1] = null;
+      userAnswers[2] = null;
+      const options = ['A', 'B', 'C', 'D'];
+      [1, 2].forEach(qNum => {
+        options.forEach(opt => {
+          const el = document.getElementById(`q${qNum}_${opt}`);
+          if (el) {
+            el.className = 'quiz-option bg-white/10 rounded-xl p-3 px-4 flex items-center gap-3 border border-white/20 text-base sm:text-lg';
+          }
+        });
+      });
+    }
+
+    // Modal Display Functions
+    function showModal(iconClass, title, messageHtml) {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+
+      modalIcon.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl ${iconClass}`;
+      modalTitle.innerText = title;
+      modalMessage.innerHTML = messageHtml;
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalCard.classList.remove('scale-95');
+        modalCard.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      modal.classList.add('opacity-0');
+      modalCard.classList.remove('scale-100');
+      modalCard.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
