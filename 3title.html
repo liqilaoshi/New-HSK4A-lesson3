@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3 - 手机扫一下</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&family=Playfair+Display:wght@600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "KaiTi", "STKaiti", "楷体", "Noto Serif SC", Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    /* 主横幅容器 */
+    .lesson-banner {
+      width: 100%;
+      max-width: 1280px;
+      height: 280px;
+      background-color: #70be5c;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 左侧白色数字卡片区域 */
+    .lesson-number-card {
+      width: 185px;
+      height: 246px;
+      background-color: #ffffff;
+      border-radius: 0 24px 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 12px;
+      position: relative;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    /* 顶部绿色 "Lesson" 胶囊标签 */
+    .lesson-badge {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #70be5c;
+      color: #ffffff;
+      font-family: "Times New Roman", "Playfair Display", Georgia, serif;
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: 0.5px;
+      padding: 4px 26px 6px;
+      border-radius: 14px 14px 0 0;
+      white-space: nowrap;
+      line-height: 1.1;
+    }
+
+    /* 绿色大号数字 "3" */
+    .lesson-digit {
+      color: #70be5c;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 168px;
+      line-height: 0.92;
+      user-select: none;
+    }
+
+    /* 中间标题区域 */
+    .lesson-title-area {
+      flex: 1;
+      padding: 0 40px 0 52px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .lesson-title-cn {
+      font-family: "KaiTi", "STKaiti", "楷体", "BiauKai", "Noto Serif SC", serif;
+      font-size: 46px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .lesson-title-en {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: 27px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+      opacity: 0.96;
+    }
+
+    /* 右侧照片区域 */
+    .lesson-photo-area {
+      width: 445px;
+      height: 100%;
+      flex-shrink: 0;
+      overflow: hidden;
+      background-color: #f4f4f4;
+    }
+
+    .lesson-photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    /* 响应式适配平板与手机 */
+    @media (max-width: 960px) {
+      .lesson-banner {
+        height: 230px;
+      }
+      .lesson-number-card {
+        width: 145px;
+        height: 202px;
+      }
+      .lesson-badge {
+        font-size: 21px;
+        padding: 3px 20px 5px;
+        top: -14px;
+      }
+      .lesson-digit {
+        font-size: 136px;
+      }
+      .lesson-title-area {
+        padding: 0 24px 0 32px;
+      }
+      .lesson-title-cn {
+        font-size: 36px;
+      }
+      .lesson-title-en {
+        font-size: 21px;
+      }
+      .lesson-photo-area {
+        width: 320px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 16px;
+      }
+      .lesson-banner {
+        height: auto;
+        flex-wrap: wrap;
+        border-radius: 16px;
+        padding-top: 16px;
+      }
+      .lesson-number-card {
+        width: 115px;
+        height: 155px;
+        margin-bottom: 16px;
+      }
+      .lesson-badge {
+        font-size: 17px;
+        padding: 3px 14px 4px;
+        top: -11px;
+      }
+      .lesson-digit {
+        font-size: 104px;
+      }
+      .lesson-title-area {
+        padding: 0 20px 16px 24px;
+        min-width: calc(100% - 115px);
+      }
+      .lesson-title-cn {
+        font-size: 28px;
+      }
+      .lesson-title-en {
+        font-size: 17px;
+      }
+      .lesson-photo-area {
+        width: 100%;
+        height: 210px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="lesson-banner" aria-label="Lesson 3: 手机扫一下">
+    <!-- 左侧数字卡片 -->
+    <div class="lesson-number-card">
+      <div class="lesson-badge">Lesson</div>
+      <div class="lesson-digit">3</div>
+    </div>
+
+    <!-- 中间双语标题 -->
+    <div class="lesson-title-area">
+      <h1 class="lesson-title-cn">手机扫一下</h1>
+      <p class="lesson-title-en">Just scan with your phone</p>
+    </div>
+
+    <!-- 右侧配图 -->
+    <div class="lesson-photo-area">
+      <img src="https://iili.io/oFvLcE7.md.png" alt="手机扫码支付">
+    </div>
+  </section>
+
+</body>
+</html>
