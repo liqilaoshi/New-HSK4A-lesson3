@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热身 Warm-Up - 课堂互动</title>
+    <style>
+        /* 全局样式重置与基础设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* 提取自原图的清新草绿色系 */
+            --primary-green: #6db965;
+            --primary-green-dark: #58a150;
+            --primary-green-light: #eef7ed;
+            --text-dark: #1a1a1a;
+            --text-white: #ffffff;
+            --bg-white: #ffffff;
+            --border-color: #c5e1c2;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部栏区域 (还原原图 Warm-Up 标签与绿色通栏) */
+        .top-header-wrapper {
+            padding-top: 24px;
+            width: 100%;
+        }
+
+        .warmup-tab {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: var(--text-white);
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 6px 32px;
+            border-radius: 12px 12px 0 0;
+            margin-left: 3%;
+            letter-spacing: 0.5px;
+        }
+
+        .green-banner {
+            background-color: var(--primary-green);
+            width: 100%;
+            padding: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: calc(3% + 36px);
+            padding-right: 5%;
+            box-shadow: 0 2px 6px rgba(109, 185, 101, 0.2);
+        }
+
+        .banner-title {
+            color: var(--text-white);
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 8px;
+        }
+
+        /* 顶部右侧倒计时小组件 */
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 30px;
+            color: var(--text-white);
+        }
+
+        .timer-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            min-width: 65px;
+            text-align: center;
+        }
+
+        .btn-timer {
+            background-color: var(--bg-white);
+            color: var(--primary-green-dark);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-timer:hover {
+            background-color: var(--primary-green-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-timer.secondary {
+            background-color: transparent;
+            color: var(--text-white);
+            border: 1px solid var(--text-white);
+        }
+
+        .btn-timer.secondary:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 主体内容容器 */
+        .main-container {
+            max-width: 1080px;
+            width: 92%;
+            margin: 36px auto;
+            flex: 1;
+        }
+
+        /* 题干指令区 */
+        .instruction-block {
+            margin-bottom: 28px;
+        }
+
+        .instruction-cn {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .instruction-en {
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 1.45rem;
+            color: #222222;
+        }
+
+        /* 绿色圆角问题卡片 (还原原图核心视觉) */
+        .question-card {
+            background-color: var(--primary-green);
+            color: var(--text-white);
+            border-radius: 32px;
+            padding: 36px 44px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 20px rgba(109, 185, 101, 0.18);
+        }
+
+        .question-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.55rem;
+            line-height: 1.65;
+            letter-spacing: 0.5px;
+        }
+
+        .question-num {
+            min-width: 52px;
+            font-weight: 500;
+        }
+
+        /* 课堂互动打字输入区 */
+        .input-section {
+            background-color: var(--primary-green-light);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px 32px;
+            margin-bottom: 28px;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-green-dark);
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .clear-btn:hover {
+            color: var(--primary-green-dark);
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 16px 20px;
+            font-size: 1.35rem;
+            font-family: inherit;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-white);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .notes-textarea:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(109, 185, 101, 0.15);
+        }
+
+        /* 参考答案区 (3分钟后解锁或手动提前查看) */
+        .answer-section {
+            margin-top: 12px;
+        }
+
+        .answer-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 16px 24px;
+            border-radius: 18px;
+        }
+
+        .status-text {
+            font-size: 1.15rem;
+            color: #555;
+        }
+
+        .btn-reveal {
+            background-color: var(--primary-green);
+            color: var(--text-white);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-reveal:hover {
+            background-color: var(--primary-green-dark);
+        }
+
+        .btn-reveal:disabled {
+            background-color: #b5d8b1;
+            cursor: not-allowed;
+        }
+
+        .reference-box {
+            display: none;
+            margin-top: 20px;
+            background-color: var(--bg-white);
+            border: 2.5px solid var(--primary-green);
+            border-radius: 24px;
+            padding: 28px 36px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .reference-box.visible {
+            display: block;
+        }
+
+        .reference-title {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: var(--primary-green-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reference-item {
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .reference-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tag-badge {
+            display: inline-block;
+            background-color: var(--primary-green-light);
+            color: var(--primary-green-dark);
+            font-weight: bold;
+            padding: 2px 10px;
+            border-radius: 8px;
+            margin-right: 8px;
+            font-size: 1.05rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式适配平板与小屏幕 */
+        @media (max-width: 768px) {
+            .green-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding-left: 6%;
+            }
+            .question-card {
+                padding: 24px 24px;
+                border-radius: 24px;
+            }
+            .question-item {
+                font-size: 1.25rem;
+            }
+            .instruction-cn {
+                font-size: 1.4rem;
+            }
+            .instruction-en {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部绿色视觉横幅 -->
+    <header class="top-header-wrapper">
+        <div class="warmup-tab">Warm-Up</div>
+        <div class="green-banner">
+            <h1 class="banner-title">热 身</h1>
+            
+            <!-- 3分钟讨论倒计时控制栏 -->
+            <div class="timer-controls">
+                <span>讨论倒计时：</span>
+                <span class="timer-display" id="timerDisplay">03:00</span>
+                <button class="btn-timer" id="startBtn" onclick="toggleTimer()">开始</button>
+                <button class="btn-timer secondary" onclick="resetTimer()">重置</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="main-container">
+        <!-- 题干要求 -->
+        <section class="instruction-block">
+            <div class="instruction-cn">2. 两人一组，根据实际情况互相问答。</div>
+            <div class="instruction-en">Work in pairs and ask each other questions based on real-life situations.</div>
+        </section>
+
+        <!-- 绿色圆角问题框 -->
+        <section class="question-card">
+            <ul class="question-list">
+                <li class="question-item">
+                    <span class="question-num">(1)</span>
+                    <span>你在网上购物吗？如果你网购，说说你是怎么进行网购的；如果你不网购，为什么？</span>
+                </li>
+                <li class="question-item">
+                    <span class="question-num">(2)</span>
+                    <span>用手机时，你会怎样保护自己的信息？</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- 课堂记录与想法输入区 -->
+        <section class="input-section">
+            <div class="input-header">
+                <label for="studentIdeas" class="input-label">课堂讨论笔记 / 想法记录区：</label>
+                <button class="clear-btn" onclick="clearNotes()">清空内容</button>
+            </div>
+            <textarea 
+                id="studentIdeas" 
+                class="notes-textarea" 
+                placeholder="请在此输入学生讨论的关键词、句子或想法……"></textarea>
+        </section>
+
+        <!-- 3分钟后解锁的参考答案区 -->
+        <section class="answer-section">
+            <div class="answer-status-bar" id="answerStatusBar">
+                <span class="status-text" id="statusText">⏳ 点击右上角“开始”计时，3分钟讨论结束后将自动提供参考答案。</span>
+                <button class="btn-reveal" id="revealBtn" onclick="showReferenceAnswer()">立即查看参考答案</button>
+            </div>
+
+            <div class="reference-box" id="referenceBox">
+                <div class="reference-title">💡 参考答案 (Reference Answers)</div>
+                <div class="reference-item">
+                    <span class="tag-badge">问题 (1)</span>
+                    <strong>网购：</strong>我经常在网上购物。一般我会先在购物软件上搜索想要的商品，看看其他买家的评价和价格对比，然后加入购物车，最后用手机银行或电子钱包付款，等快递送到家。<br>
+                    <strong>不网购：</strong>我不太喜欢网购，因为看不到实物，担心买到质量不好的东西或者尺寸不合适，退货也很麻烦。
+                </div>
+                <div class="reference-item">
+                    <span class="tag-badge">问题 (2)</span>
+                    我会设置复杂的锁屏密码或指纹解锁；不随便连接公共场所的免费 Wi-Fi；不轻易点击陌生人发来的链接；在下载新软件时，注意不随便允许它获取我的通讯录和位置信息。
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let totalSeconds = 180; // 3分钟 = 180秒
+        let timerInterval = null;
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const statusText = document.getElementById('statusText');
+        const referenceBox = document.getElementById('referenceBox');
+        const answerStatusBar = document.getElementById('answerStatusBar');
+
+        function updateDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerDisplay.textContent = 
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startBtn.textContent = '继续';
+                statusText.textContent = '⏸️ 计时已暂停。';
+            } else {
+                if (totalSeconds <= 0) return;
+                isRunning = true;
+                startBtn.textContent = '暂停';
+                statusText.textContent = '⏳ 正在讨论中，倒计时结束后将自动显示参考答案……';
+                
+                timerInterval = setInterval(() => {
+                    totalSeconds--;
+                    updateDisplay();
+
+                    if (totalSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        startBtn.textContent = '已结束';
+                        startBtn.disabled = true;
+                        showReferenceAnswer(true);
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            totalSeconds = 180;
+            updateDisplay();
+            startBtn.textContent = '开始';
+            startBtn.disabled = false;
+            referenceBox.classList.remove('visible');
+            answerStatusBar.style.display = 'flex';
+            statusText.textContent = '⏳ 点击右上角“开始”计时，3分钟讨论结束后将自动提供参考答案。';
+        }
+
+        function showReferenceAnswer(isAuto = false) {
+            referenceBox.classList.add('visible');
+            if (isAuto) {
+                statusText.textContent = '✅ 3分钟时间到！参考答案已自动展开：';
+            } else {
+                statusText.textContent = '✅ 参考答案已展开：';
+            }
+            document.getElementById('revealBtn').style.display = 'none';
+        }
+
+        function clearNotes() {
+            const textarea = document.getElementById('studentIdeas');
+            textarea.value = '';
+            textarea.focus();
+        }
+    </script>
+</body>
+</html>
