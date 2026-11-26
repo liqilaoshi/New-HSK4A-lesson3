@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK 4 第三课 课文三 - 网购与手机支付</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans SC', 'Roboto', sans-serif;
+      background-color: #f7faf7;
+      color: #2c3e50;
+      user-select: none;
+    }
+
+    /* HSK Textbook Signature Green Palette */
+    .hsk-green {
+      background-color: #4CAF50;
+    }
+    .hsk-green-dark {
+      background-color: #2E7D32;
+    }
+    .hsk-green-light {
+      background-color: #E8F5E9;
+    }
+
+    /* Smooth Page Transitions */
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Inline Highlighted Vocabulary & Floating Hover Tooltip */
+    .vocab-hl {
+      color: #2E7D32;
+      font-weight: 700;
+      background-color: #E8F5E9;
+      padding: 1px 6px;
+      border-radius: 6px;
+      border-bottom: 2px solid #4CAF50;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    .vocab-hl:hover {
+      background-color: #4CAF50;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .vocab-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 50;
+      width: 225px;
+      pointer-events: none;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .vocab-hl:hover .vocab-tooltip,
+    .vocab-hl:focus .vocab-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .vocab-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #1F2937 transparent transparent transparent;
+    }
+
+    /* Quiz Option Custom Styles */
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: #f0fdf4;
+      border-color: #4CAF50;
+    }
+    .quiz-option.selected {
+      background-color: #4CAF50 !important;
+      color: white !important;
+      border-color: #4CAF50 !important;
+    }
+    .quiz-option.correct {
+      background-color: #dcfce7 !important;
+      color: #15803d !important;
+      border-color: #22c55e !important;
+    }
+    .quiz-option.wrong {
+      background-color: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-color: #ef4444 !important;
+    }
+
+    /* Active Microphone Pulse Animation */
+    .mic-recording {
+      animation: pulse-ring 1.2s infinite;
+      background-color: #ef4444 !important;
+      color: white !important;
+      border-color: #ef4444 !important;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+      70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-10">
+
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full flex-grow">
+
+    <!-- Top Navigation Header Banner -->
+    <div class="hsk-green rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+        <div class="inline-block bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-4 py-1 rounded-full">
+          HSK 4 第三课 课文三
+        </div>
+        <!-- 6-Page Navigation Tabs -->
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          <button onclick="goToPage(1)" id="tabBtn1" class="text-xs px-2.5 py-1.5 rounded-lg bg-white text-emerald-800 font-bold shadow-xs transition">1. 课文与生词</button>
+          <button onclick="goToPage(2)" id="tabBtn2" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">2. 巩固测试一(单选)</button>
+          <button onclick="goToPage(3)" id="tabBtn3" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">3. 巩固测试二(认读)</button>
+          <button onclick="goToPage(4)" id="tabBtn4" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">4. 重点句子朗读</button>
+          <button onclick="goToPage(5)" id="tabBtn5" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">5. 课文问答练习</button>
+          <button onclick="goToPage(6)" id="tabBtn6" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">6. 按提示复述课文</button>
+        </div>
+      </div>
+      <div class="text-xl sm:text-2xl md:text-3xl font-bold flex items-start gap-2 leading-snug">
+        <span>第三课 课文3：网购与手机支付</span>
+      </div>
+      <p class="text-white/90 text-sm sm:text-base font-normal mt-1 italic">
+        Mobile payments, online shopping habits, convenience, and self-control in spending.
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 1: 课文与生词 (Text 3 & New Words)      -->
+    <!-- ========================================== -->
+    <div id="page1" class="page active">
+      
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-6 flex items-center gap-2 text-xs sm:text-sm text-emerald-800">
+        <i class="fa-solid fa-lightbulb text-amber-500 text-base"></i>
+        <span>提示：将鼠标移至课文中<b>绿底高亮生词</b>上可查看拼音、词性与英译；点击任意生词可听标准发音。</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
+        
+        <!-- Left 8 cols: Narrative Text + Top Right Scene Image -->
+        <div class="lg:col-span-8 bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-gray-100 relative">
+          
+          <!-- TTS Passage Reader Control Bar -->
+          <div class="mb-5 bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-full hsk-green text-white flex items-center justify-center shadow-xs">
+                <i class="fa-solid fa-headphones"></i>
+              </div>
+              <div>
+                <span class="text-xs sm:text-sm font-bold text-emerald-900 block">课文三语音朗读 (Text 3 Audio)</span>
+                <span class="text-[11px] text-emerald-700">点击右侧按钮收听标准普通话全文朗读</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="ttsPassageBtn" onclick="togglePassageTTS()" class="px-4 py-2 hsk-green hover:bg-emerald-600 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-volume-high" id="ttsPassageIcon"></i>
+                <span id="ttsPassageLabel">🔊 朗读课文</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Top Right Floating Scene Image -->
+          <div class="float-none sm:float-right sm:ml-6 mb-4 sm:mb-3 w-full sm:w-64 rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+            <img src="https://iili.io/oqINi4p.md.png" alt="手机支付与网购场景" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/400x300/4CAF50/ffffff?text=Mobile+Payment';" />
+          </div>
+
+          <!-- Narrative Text Content (2 Paragraphs) -->
+          <div class="text-base sm:text-lg leading-loose text-gray-800 space-y-5">
+            <p class="indent-8">
+              白家月和陈天中刚到北京时就发现，中国人在饭馆或超市结账时，几乎都用手机支付，只有他们用<span class="vocab-hl" onclick="speakText('现金')">现金<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">xiànjīn</strong><span class="text-gray-300">n. cash</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>结账。
+            </p>
+            <p class="indent-8">
+              在李文的帮助下，白家月和陈天中也都学会了用手机支付、<span class="vocab-hl" onclick="speakText('网购')">网购<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">wǎnggòu</strong><span class="text-gray-300">v. shop online</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>、<span class="vocab-hl" onclick="speakText('寄')">寄<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">jì</strong><span class="text-gray-300">v. send</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>快递<span class="vocab-hl" onclick="speakText('等等')">等<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">děng</strong><span class="text-gray-300">part. etc.</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>等。在中国网购，不仅选择多、价格不高，而且送<span class="vocab-hl" onclick="speakText('货')">货<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">huò</strong><span class="text-gray-300">n. goods</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>很快，很多留学生<span class="vocab-hl" onclick="speakText('甚至')">甚至<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">shènzhì</strong><span class="text-gray-300">conj. even</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span><span class="vocab-hl" onclick="speakText('改变')">改变<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">gǎibiàn</strong><span class="text-gray-300">v. change</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>了自己的购物习惯。不过，由于网购太方便了，动动<span class="vocab-hl" onclick="speakText('手指')">手指<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">shǒuzhǐ</strong><span class="text-gray-300">n. finger</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>就能买到想要的东西，他们也开始担心自己在网购时会<span class="vocab-hl" onclick="speakText('乱')">乱<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">luàn</strong><span class="text-gray-300">adv./adj. indiscriminately; messy</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>花钱。怎么才能<span class="vocab-hl" onclick="speakText('管')">管<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-emerald-400 text-sm block">guǎn</strong><span class="text-gray-300">v. control</span><span class="block mt-1 text-[10px] text-emerald-200">🔊 点击听发音</span></span></span>住自己不乱花钱呢？
+            </p>
+          </div>
+
+          <div class="clear-both"></div>
+        </div>
+
+        <!-- Right 4 cols: New Words Sidebar (生词 3-6: 18-27) -->
+        <div class="lg:col-span-4 bg-emerald-50 rounded-3xl p-5 border border-emerald-200 shadow-sm sticky top-6">
+          <div class="flex justify-between items-center border-b border-emerald-200 pb-3 mb-4">
+            <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+              <span class="bg-white text-emerald-700 px-2.5 py-0.5 rounded-lg text-sm border border-emerald-200">生词</span>
+              New Words 3-6
+            </h3>
+            <button onclick="speakAllVocab()" class="text-emerald-700 hover:text-emerald-900 text-xs font-medium flex items-center gap-1 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-sm transition">
+              <i class="fa-solid fa-volume-high"></i> 朗读生词
+            </button>
+          </div>
+
+          <div class="space-y-2" id="wordListSidebar">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Page 1 Bottom Navigation -->
+      <div class="flex justify-end">
+        <button onclick="goToPage(2)" class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：巩固测试一（汉英选择）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2: 巩固测试一 —— 汉-英单项选择题        -->
+    <!-- ========================================== -->
+    <div id="page2" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+              巩固测试一：生词汉-英单项选择小测试
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">Part 1: Vocabulary Chinese-to-English Multiple Choice Quiz</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-gray-400 block">当前得分</span>
+            <span id="quizScoreTag" class="text-xl font-bold text-emerald-600">未提交</span>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="space-y-6">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-100 flex flex-wrap justify-between items-center gap-3">
+          <button onclick="resetQuiz()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> 重置并打乱题目
+          </button>
+          <button onclick="submitQuiz()" class="px-7 py-2.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+            <i class="fa-solid fa-check mr-1"></i> 提交答案
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(1)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第一页
+        </button>
+        <button onclick="goToPage(3)" class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：巩固测试二（生词认读）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 3: 巩固测试二 —— 生词认读测试 (Flashcard) -->
+    <!-- ========================================== -->
+    <div id="page3" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-8">
+        <div class="border-b border-gray-100 pb-4 mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+              巩固测试二：汉字认读能力测试（无拼音）
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">Part 2: Character Oral Reading Test (One Word at a Time)</p>
+          </div>
+          <!-- Progress Counter Badge -->
+          <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2">
+            <span>词语进度: <span id="speechWordIndexTag" class="text-emerald-600 text-sm">1</span> / <span id="speechTotalWordsTag">10</span></span>
+            <span class="text-gray-300">|</span>
+            <span>已通关: <span id="speechPassedCountTag" class="text-emerald-700">0</span></span>
+          </div>
+        </div>
+
+        <!-- Visual Progress Bar -->
+        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-5">
+          <div id="speechProgressBar" class="hsk-green h-full transition-all duration-300" style="width: 10%;"></div>
+        </div>
+
+        <div class="text-xs bg-amber-50 text-amber-800 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2 mb-6">
+          <i class="fa-solid fa-microphone text-amber-600"></i>
+          <span>测试要求：不看拼音直接大声读出词语。点击红色“🎤 点击朗读”按钮检测发音，读对即可触发彩带撒花！遇到困难可点击“显示拼音”。</span>
+        </div>
+
+        <!-- Single Word Flashcard Container -->
+        <div class="max-w-xl mx-auto" id="speechContainer">
+          <!-- Single Card injected dynamically -->
+        </div>
+
+        <!-- Flashcard Navigation Buttons -->
+        <div class="flex justify-between items-center max-w-xl mx-auto mt-6 pt-4 border-t border-gray-100">
+          <button onclick="prevWordSpeech()" id="prevWordBtn" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition flex items-center gap-1">
+            <i class="fa-solid fa-chevron-left"></i> 上一个词
+          </button>
+          <button onclick="nextWordSpeech()" id="nextWordBtn" class="px-5 py-2 hsk-green hover:bg-emerald-600 text-white font-medium rounded-xl text-sm transition flex items-center gap-1 shadow-sm">
+            下一个词 <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(2)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第二页
+        </button>
+        <button onclick="goToPage(4)" class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：重点句子朗读
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 4: 重点句子朗读 (Part 3 Sentence Oral)  -->
+    <!-- ========================================== -->
+    <div id="page4" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="border-b border-gray-100 pb-4 mb-6">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span>重点句子朗读练习</span>
+            <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-normal">录音 & 测评</span>
+          </h2>
+          <p class="text-gray-500 text-sm mt-1">Part 3: Key Sentence Oral Practice with Voice Recording & Strict Full-Sentence Evaluation</p>
+        </div>
+
+        <div class="space-y-6" id="sentenceContainer">
+          <!-- Sentence cards injected dynamically -->
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(3)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第三页
+        </button>
+        <button onclick="goToPage(5)" class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：课文问答练习
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 5: 课文问答练习 (Part 4 Comprehension Q&A) -->
+    <!-- ========================================== -->
+    <div id="page5" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        
+        <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-800">
+              <span class="w-4 h-4 bg-emerald-600 inline-block rounded-xs"></span>
+              <span>根据课文内容回答问题。</span>
+            </div>
+            <p class="text-gray-500 text-sm italic mt-1 pl-6">
+              Answer the questions according to the text.
+            </p>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100">
+            <i class="fa-solid fa-comments text-emerald-600 text-xl"></i>
+            <span class="text-xs text-emerald-800 font-medium">支持语音录音转文字 + 自动打分</span>
+          </div>
+        </div>
+
+        <div class="space-y-8">
+          
+          <!-- Question 1 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5" id="qaBox_1">
+            <div class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-start gap-2">
+              <span class="text-emerald-700">（1）</span>
+              <span>白家月和陈天中学会用手机做什么了？</span>
+            </div>
+
+            <div class="relative mb-3">
+              <textarea 
+                id="qaText1" 
+                rows="3" 
+                placeholder="请点击下方“🎤 语音输入回答”口述答案，或直接在此输入文字..."
+                class="w-full p-3.5 bg-white rounded-xl border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 text-sm sm:text-base outline-none transition"
+              ></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button 
+                id="qaMicBtn1"
+                onclick="toggleVoiceInputQA(1)"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <span id="qaMicText1">🎤 语音输入回答</span>
+              </button>
+
+              <div class="text-xs text-gray-500 font-medium">
+                得分状态：<span id="qaScoreText1" class="font-bold text-gray-600">未检测</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5" id="qaBox_2">
+            <div class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-start gap-2">
+              <span class="text-emerald-700">（2）</span>
+              <span>留学生为什么也喜欢网购？</span>
+            </div>
+
+            <div class="relative mb-3">
+              <textarea 
+                id="qaText2" 
+                rows="3" 
+                placeholder="请点击下方“🎤 语音输入回答”口述答案，或直接在此输入文字..."
+                class="w-full p-3.5 bg-white rounded-xl border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 text-sm sm:text-base outline-none transition"
+              ></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button 
+                id="qaMicBtn2"
+                onclick="toggleVoiceInputQA(2)"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <span id="qaMicText2">🎤 语音输入回答</span>
+              </button>
+
+              <div class="text-xs text-gray-500 font-medium">
+                得分状态：<span id="qaScoreText2" class="font-bold text-gray-600">未检测</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between items-center">
+          <button onclick="resetQA()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            🔄 重置
+          </button>
+          <button onclick="gradeQA()" class="px-7 py-2.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+            📊 提交并自动打分
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(4)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第四页
+        </button>
+        <button onclick="goToPage(6)" class="px-8 py-3.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：按提示复述课文
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 6: 按提示复述课文 (Part 5 Guided Retell) -->
+    <!-- ========================================== -->
+    <div id="page6" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        
+        <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-800">
+              <span class="w-4 h-4 bg-emerald-600 inline-block rounded-xs"></span>
+              <span>根据给出的提示复述课文。</span>
+            </div>
+            <p class="text-gray-500 text-sm italic mt-1 pl-6">
+              Retell the text using the provided prompts.
+            </p>
+          </div>
+          <button onclick="toggleRetellHints()" id="toggleRetellHintBtn" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+            <i class="fa-regular fa-lightbulb text-amber-500"></i>
+            <span id="toggleRetellHintText">显示提示词</span>
+          </button>
+        </div>
+
+        <!-- Fill-in-the-Blank Guided Retelling Passage (13 Blanks) -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-7 leading-loose text-base sm:text-lg text-gray-800 space-y-4 mb-6" id="retellPassageContainer">
+          <!-- Populated dynamically via JS for clean per-blank mic + hint handling -->
+        </div>
+
+        <!-- Whole-Passage Oral Retelling Recording & Playback Controls -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div class="flex flex-wrap items-center gap-2">
+            <button 
+              id="retellRecordBtn" 
+              onclick="toggleRetellFullAudio()" 
+              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+            >
+              <span id="retellRecordText">🎙️ 录制完整复述</span>
+            </button>
+            <button 
+              id="playRetellAudioBtn" 
+              onclick="playRetellFullAudio()" 
+              disabled 
+              class="px-4 py-2 bg-gray-200 text-gray-400 font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 cursor-not-allowed"
+            >
+              ▶️ 回放复述
+            </button>
+          </div>
+
+          <div class="text-xs text-gray-600 font-medium">
+            复述自动评分：<span id="retellScoreTag" class="font-bold text-emerald-700 text-sm">未检测</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-between items-center gap-3 pt-2">
+          <button onclick="resetRetell()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            🔄 清空重置
+          </button>
+          <button onclick="gradeRetell()" class="px-7 py-2.5 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+            ✅ 检查并自动评分
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(5)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第五页
+        </button>
+        <button onclick="triggerConfetti(); showModal('fa-solid fa-crown text-amber-500 bg-amber-50', '全课学习成功通关！🎉', '恭喜你！完整完成了 HSK 4 第三课课文三的全部学习、生词测验、句子朗读、问答与课文复述任务！');" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-trophy"></i> 通关全课学习
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Result Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+      <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+      <p id="modalMessage" class="text-gray-600 mb-6 leading-relaxed text-sm sm:text-base"></p>
+      <button onclick="closeModal()" class="w-full py-3 hsk-green hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+        确定 / OK
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. Vocabulary Data (生词 3-6: 18-27)
+    // ==========================================
+    const vocabData = [
+      { id: 18, word: '现金', pinyin: 'xiànjīn', pos: 'n.', english: 'cash', choices: ['cash', 'credit card', 'bank account', 'mobile payment'] },
+      { id: 19, word: '网购', pinyin: 'wǎnggòu', pos: 'v.', english: 'shop online', choices: ['shop online', 'deliver goods', 'window shop', 'return items'] },
+      { id: 20, word: '寄', pinyin: 'jì', pos: 'v.', english: 'send', choices: ['send', 'receive', 'buy', 'keep'] },
+      { id: 21, word: '等', pinyin: 'děng', pos: 'part.', english: 'etc.', choices: ['etc.', 'however', 'because', 'already'] },
+      { id: 22, word: '货', pinyin: 'huò', pos: 'n.', english: 'goods', choices: ['goods', 'money', 'receipt', 'customer'] },
+      { id: 23, word: '甚至', pinyin: 'shènzhì', pos: 'conj.', english: 'even', choices: ['even', 'although', 'unless', 'instead'] },
+      { id: 24, word: '改变', pinyin: 'gǎibiàn', pos: 'v.', english: 'change', choices: ['change', 'maintain', 'repeat', 'cancel'] },
+      { id: 25, word: '手指', pinyin: 'shǒuzhǐ', pos: 'n.', english: 'finger', choices: ['finger', 'palm', 'arm', 'shoulder'] },
+      { id: 26, word: '乱', pinyin: 'luàn', pos: 'adv./adj.', english: 'indiscriminately; messy', choices: ['indiscriminately; messy', 'neatly; orderly', 'carefully', 'slowly'] },
+      { id: 27, word: '管', pinyin: 'guǎn', pos: 'v.', english: 'control', choices: ['control', 'waste', 'spend', 'ignore'] }
+    ];
+
+    // ==========================================
+    // 2. Key Sentences Data (Page 4)
+    // ==========================================
+    const sentenceData = [
+      {
+        id: 1,
+        pinyin: 'Zhōngguórén zài fànguǎn huò chāoshì jiézhàng shí, jīhū dōu yòng shǒujī zhīfù, zhǐyǒu tāmen yòng xiànjīn jiézhàng.',
+        text: '中国人在饭馆或超市结账时，几乎都用手机支付，只有他们用现金结账。',
+        english: 'When Chinese people pay the bill at restaurants or supermarkets, almost everyone uses mobile payment; only they paid with cash.',
+        keyPhrases: ['饭馆或超市', '结账时', '几乎都', '手机支付', '现金结账']
+      },
+      {
+        id: 2,
+        pinyin: 'Zài Lǐ Wén de bāngzhù xià, Bái Jiāyuè hé Chén Tiānzhōng yě dōu xuéhuì le yòng shǒujī zhīfù, wǎnggòu, jì kuàidì děngděng.',
+        text: '在李文的帮助下，白家月和陈天中也都学会了用手机支付、网购、寄快递等等。',
+        english: 'With Li Wen\'s help, Bai Jiayue and Chen Tianzhong also learned how to use mobile payment, shop online, send express packages, and so on.',
+        keyPhrases: ['李文的帮助', '学会了', '手机支付', '网购', '寄快递']
+      },
+      {
+        id: 3,
+        pinyin: 'Zài Zhōngguó wǎnggòu, bùjǐn xuǎnzé duō, jiàgé bù gāo, érqiě sònghuò hěn kuài, hěn duō liúxuéshēng shènzhì gǎibiàn le zìjǐ de gòuwù xíguàn.',
+        text: '在中国网购，不仅选择多、价格不高，而且送货很快，很多留学生甚至改变了自己的购物习惯。',
+        english: 'Shopping online in China not only offers many choices and low prices, but also fast delivery; many international students have even changed their shopping habits.',
+        keyPhrases: ['选择多', '价格不高', '送货很快', '甚至', '改变', '购物习惯']
+      },
+      {
+        id: 4,
+        pinyin: 'Yóuyú wǎnggòu tài fāngbiàn le, dòngdong shǒuzhǐ jiù néng mǎidào xiǎngyào de dōngxi, tāmen yě kāishǐ dānxīn zìjǐ zài wǎnggòu shí huì luàn huāqián.',
+        text: '由于网购太方便了，动动手指就能买到想要的东西，他们也开始担心自己在网购时会乱花钱。',
+        english: 'Because online shopping is so convenient—just moving a finger lets you buy whatever you want—they also began to worry that they might spend money indiscriminately when shopping online.',
+        keyPhrases: ['太方便了', '动动手指', '买到想要的东西', '担心', '乱花钱']
+      }
+    ];
+
+    // ==========================================
+    // 3. Retelling Passage Blanks Data (Page 6)
+    // ==========================================
+    const retellBlanks = [
+      { id: 1, prefix: '白家月和陈天中', correct: '刚到北京时', keywords: ['刚到北京', '刚到北京时'], suffix: '就发现，中国人在' },
+      { id: 2, prefix: '', correct: '饭馆或超市', keywords: ['饭馆', '超市', '饭馆或超市'], suffix: '结账时，几乎都' },
+      { id: 3, prefix: '', correct: '用手机支付', keywords: ['手机支付', '用手机支付'], suffix: '，只有他们' },
+      { id: 4, prefix: '', correct: '用现金结账', keywords: ['现金', '用现金', '用现金结账'], suffix: '。后来，在' },
+      { id: 5, prefix: '', correct: '李文的帮助', keywords: ['李文', '李文的帮助'], suffix: '下，他们也都学会了' },
+      { id: 6, prefix: '', correct: '用手机支付', keywords: ['手机支付', '用手机支付'], suffix: '、网购、寄快递等等。在中国网购，不仅' },
+      { id: 7, prefix: '', correct: '选择多', keywords: ['选择多'], suffix: '、价格不高，而且' },
+      { id: 8, prefix: '', correct: '送货很快', keywords: ['送货快', '送货很快'], suffix: '，很多留学生甚至改变了' },
+      { id: 9, prefix: '', correct: '自己的购物习惯', keywords: ['购物习惯', '自己的购物习惯'], suffix: '。不过，由于网购' },
+      { id: 10, prefix: '', correct: '太方便了', keywords: ['方便', '太方便', '太方便了'], suffix: '，动动手指就能' },
+      { id: 11, prefix: '', correct: '买到想要的东西', keywords: ['买到', '想要的东西', '买到想要的东西'], suffix: '，他们也开始担心自己在网购时' },
+      { id: 12, prefix: '', correct: '会乱花钱', keywords: ['乱花钱', '会乱花钱'], suffix: '。怎么才能' },
+      { id: 13, prefix: '', correct: '管住自己不乱花钱呢', keywords: ['管住自己', '不乱花钱', '管住'], suffix: '？' }
+    ];
+// ... existing code ... -->
+    // ==========================================
+    // Page 6: Guided Story Retelling (13 Blanks)
+    // ==========================================
+    let showRetellHintsState = false;
+    let activeBlankRec = null;
+    let activeBlankId = null;
+
+    // Calculate exact character width in em so every blank matches its content size with zero extra whitespace
+    function getExactWidthStyle(text) {
+      const charCount = Math.max(text.length, 2);
+      return `width: ${charCount}em;`;
+    }
+
+    function renderRetellPassage() {
+      const container = document.getElementById('retellPassageContainer');
+      let html = '<p class="indent-8 leading-[2.6]">';
+      retellBlanks.forEach(b => {
+        const exactStyle = getExactWidthStyle(b.correct);
+        html += `${b.prefix}<span class="inline-flex items-center align-baseline mx-0.5 bg-white border border-emerald-300 rounded-lg px-1 py-0.5 shadow-2xs focus-within:ring-2 focus-within:ring-emerald-200">
+          <span class="text-[10px] font-bold text-emerald-600 mr-0.5 select-none">${b.id}</span>
+          <input 
+            type="text" 
+            id="blank_${b.id}" 
+            style="${exactStyle}"
+            oninput="syncBlankWidth(this, '${b.correct}')"
+            placeholder="${showRetellHintsState ? b.correct : ''}" 
+            class="text-sm sm:text-base text-emerald-900 font-bold text-center outline-none bg-transparent p-0"
+          />
+          <button 
+            type="button"
+            id="blankMic_${b.id}"
+            onclick="dictateSingleBlank(${b.id})"
+            title="语音输入第 ${b.id} 空"
+            class="ml-0.5 w-5 h-5 rounded-md bg-red-50 hover:bg-red-500 text-red-500 hover:text-white text-[11px] flex items-center justify-center transition flex-shrink-0"
+          >🎤</button>
+        </span>${b.suffix}`;
+      });
+      html += '</p>';
+      container.innerHTML = html;
+    }
+
+    function syncBlankWidth(inputEl, defaultText) {
+      const currentText = inputEl.value.trim();
+      const targetLen = currentText.length > 0 ? currentText.length : defaultText.length;
+      inputEl.style.width = `${Math.max(targetLen, 2)}em`;
+    }
+
+    function toggleRetellHints() {
+      showRetellHintsState = !showRetellHintsState;
+      document.getElementById('toggleRetellHintText').innerText = showRetellHintsState ? '隐藏提示词' : '显示提示词';
+      retellBlanks.forEach(b => {
+        const input = document.getElementById(`blank_${b.id}`);
+        if (input) {
+          input.placeholder = showRetellHintsState ? b.correct : '';
+        }
+      });
+    }
+
+    function dictateSingleBlank(blankId) {
+      if (!SpeechRecognition) {
+        showModal('fa-solid fa-circle-info text-amber-500 bg-amber-50', '浏览器提示', '请使用 Chrome 或 Edge 浏览器进行语音输入。');
+        return;
+      }
+
+      if (activeBlankRec) {
+        try { activeBlankRec.stop(); } catch(e) {}
+      }
+
+      const micBtn = document.getElementById(`blankMic_${blankId}`);
+      const inputEl = document.getElementById(`blank_${blankId}`);
+      const blankObj = retellBlanks.find(b => b.id === blankId);
+
+      activeBlankId = blankId;
+      activeBlankRec = new SpeechRecognition();
+      activeBlankRec.lang = 'zh-CN';
+      activeBlankRec.continuous = false;
+      activeBlankRec.interimResults = false;
+
+      micBtn.classList.add('mic-recording');
+
+      activeBlankRec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript.trim().replace(/[。，！？、]/g, '');
+        if (inputEl) {
+          inputEl.value = transcript;
+          if (blankObj) syncBlankWidth(inputEl, blankObj.correct);
+        }
+      };
+
+      activeBlankRec.onerror = () => {
+        micBtn.classList.remove('mic-recording');
+        activeBlankId = null;
+      };
+
+      activeBlankRec.onend = () => {
+        micBtn.classList.remove('mic-recording');
+        activeBlankId = null;
+      };
+
+      activeBlankRec.start();
+    }
+// ... existing code ... -->
+    function gradeRetell() {
+      let correctCount = 0;
+      retellBlanks.forEach(item => {
+        const input = document.getElementById(`blank_${item.id}`);
+        if (!input) return;
+        const wrapper = input.parentElement;
+        const val = input.value.trim().replace(/[。，！？、\s]/g, '');
+        let matched = false;
+
+        item.keywords.forEach(kw => {
+          if (val.includes(kw)) matched = true;
+        });
+
+        if (matched) {
+          correctCount++;
+          wrapper.className = "inline-flex items-center align-baseline mx-0.5 bg-emerald-100 border-2 border-emerald-500 rounded-lg px-1 py-0.5 shadow-2xs";
+          input.className = "text-sm sm:text-base text-emerald-900 font-bold text-center outline-none bg-transparent p-0";
+        } else {
+          wrapper.className = "inline-flex items-center align-baseline mx-0.5 bg-red-50 border-2 border-red-400 rounded-lg px-1 py-0.5 shadow-2xs";
+          input.className = "text-sm sm:text-base text-red-800 font-bold text-center outline-none bg-transparent p-0";
+        }
+      });
+
+      const score = Math.round((correctCount / retellBlanks.length) * 100);
+// ... existing code ... -->
+    function resetRetell() {
+      retellBlanks.forEach(item => {
+        const input = document.getElementById(`blank_${item.id}`);
+        if (input) {
+          input.value = '';
+          input.style.width = `${Math.max(item.correct.length, 2)}em`;
+          const wrapper = input.parentElement;
+          wrapper.className = "inline-flex items-center align-baseline mx-0.5 bg-white border border-emerald-300 rounded-lg px-1 py-0.5 shadow-2xs focus-within:ring-2 focus-within:ring-emerald-200";
+          input.className = "text-sm sm:text-base text-emerald-900 font-bold text-center outline-none bg-transparent p-0";
+        }
+      });
+      document.getElementById('retellScoreTag').innerText = '未检测';
+    }
+// ... existing code ... -->
